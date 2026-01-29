@@ -3,7 +3,7 @@ version: "3.7"
 services:
   frontend:
     build:
-      context: ../uek223_team4_Frontend
+      context: ../frontend
       dockerfile: Dockerfile
     image: felipe-frontend:latest
     container_name: felipe-frontend
@@ -15,7 +15,7 @@ services:
 
   backend:
     build:
-      context: ../uek223_team4_backend
+      context: ../backend
       dockerfile: Dockerfile
     image: felipe-backend:latest
     container_name: felipe-backend
