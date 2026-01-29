@@ -1,0 +1,46 @@
+version: "3.7"
+
+services:
+  frontend:
+    build:
+      context: ../uek223_team4_Frontend
+      dockerfile: Dockerfile
+    image: felipe-frontend:latest
+    container_name: felipe-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8908:80"
+
+  backend:
+    build:
+      context: ../uek223_team4_backend
+      dockerfile: Dockerfile
+    image: felipe-backend:latest
+    container_name: felipe-backend
+    restart: unless-stopped
+    ports:
+      - "8909:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    depends_on:
+      - db
+
+  db:
+    image: "postgres:latest"
+    container_name: felipe-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "postgres"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
