@@ -1,0 +1,14 @@
+FROM postgres:16-alpine
+
+# Match the README run command:
+# docker run --name postgres_db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres
+ENV POSTGRES_USER=postgres \
+    POSTGRES_PASSWORD=postgres
+
+# Default database name (optional, backend usually connects to "postgres")
+ENV POSTGRES_DB=postgres
+
+# Expose the Postgres port
+EXPOSE 5489
+
+# Use the default Postgres entrypoint/CMD from the base image
