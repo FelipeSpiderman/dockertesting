@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.demo.domain.event.EventControllerTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-01-16T09:30:21.291Z" hostname="LAPTOP_VITUS" time="0.057">
+  <properties/>
+  <testcase name="removeParticipant()" classname="com.example.demo.domain.event.EventControllerTest" time="0.033"/>
+  <testcase name="deleteEvent()" classname="com.example.demo.domain.event.EventControllerTest" time="0.002"/>
+  <testcase name="updateEvent()" classname="com.example.demo.domain.event.EventControllerTest" time="0.001"/>
+  <testcase name="createEvent()" classname="com.example.demo.domain.event.EventControllerTest" time="0.002"/>
+  <testcase name="getMyEvents()" classname="com.example.demo.domain.event.EventControllerTest" time="0.002"/>
+  <testcase name="addParticipant()" classname="com.example.demo.domain.event.EventControllerTest" time="0.001"/>
+  <testcase name="updateParticipantRole()" classname="com.example.demo.domain.event.EventControllerTest" time="0.0"/>
+  <testcase name="getEvent()" classname="com.example.demo.domain.event.EventControllerTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

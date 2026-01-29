@@ -1,0 +1,1470 @@
+{
+  "info": {
+    "_postman_id": "e9fd7bad-9ea3-442d-8592-d6dca64a87a4",
+    "name": "UEK223 Team 4 Backend API",
+    "description": "API collection for the UEK223 Team 4 Backend project. This Spring Boot application manages users and events with JWT authentication.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Clear old token before login",
+                  "console.log('🔄 Clearing old token before login...');",
+                  "pm.collectionVariables.unset('token');",
+                  "console.log('✅ Old token cleared');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Login Endpoint Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Authorization header exists', function() {",
+                  "    pm.response.to.have.header('Authorization');",
+                  "});",
+                  "",
+                  "pm.test('Token is extracted and saved', function() {",
+                  "    const authHeader = pm.response.headers.get('Authorization');",
+                  "    pm.expect(authHeader).to.exist;",
+                  "    ",
+                  "    // Extract token (remove 'Bearer ' prefix if present)",
+                  "    let token = authHeader;",
+                  "    if (authHeader.startsWith('Bearer ')) {",
+                  "        token = authHeader.substring(7);",
+                  "    }",
+                  "    ",
+                  "    // Save token to collection variable",
+                  "    pm.collectionVariables.set('token', token);",
+                  "    console.log('✅ Token saved to collection variable');",
+                  "});",
+                  "",
+                  "pm.test('Token format is valid JWT', function() {",
+                  "    const token = pm.collectionVariables.get('token');",
+                  "    pm.expect(token).to.exist;",
+                  "    ",
+                  "    // JWT format: header.payload.signature (3 parts separated by dots)",
+                  "    const jwtParts = token.split('.');",
+                  "    pm.expect(jwtParts).to.have.lengthOf(3, 'JWT should have 3 parts');",
+                  "    ",
+                  "    // Each part should be base64 encoded",
+                  "    jwtParts.forEach((part, index) => {",
+                  "        pm.expect(part.length).to.be.greaterThan(0, 'JWT part ' + (index + 1) + ' should not be empty');",
+                  "    });",
+                  "    ",
+                  "    console.log('✅ Token format validated as JWT');",
+                  "});",
+                  "",
+                  "// Success message",
+                  "if (pm.response.code === 200) {",
+                  "    console.log('🎉 LOGIN SUCCESSFUL!');",
+                  "    console.log('🔑 Token has been saved to {{token}} variable');",
+                  "    console.log('💡 You can now run authenticated requests');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "id": "a363c15a-5021-489d-8a8c-f08fd3230235",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "login"
+              ]
+            },
+            "description": "Public endpoint to authenticate users. Returns JWT token in the Authorization header that should be used for subsequent authenticated requests."
+          },
+          "response": []
+        }
+      ],
+      "id": "80d0d882-084a-4c5b-bbbd-7a876537d43c"
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Register with Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Register with Password Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 201 Created', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has required user fields', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('firstName');",
+                  "    pm.expect(jsonData).to.have.property('lastName');",
+                  "    pm.expect(jsonData).to.have.property('email');",
+                  "    ",
+                  "    console.log('✅ All required fields present');",
+                  "});",
+                  "",
+                  "pm.test('User ID is saved to variable', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.exist;",
+                  "    ",
+                  "    pm.collectionVariables.set('userId', jsonData.id);",
+                  "    console.log('✅ User ID saved: ' + jsonData.id);",
+                  "});",
+                  "",
+                  "pm.test('Email format is valid', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;",
+                  "    pm.expect(jsonData.email).to.match(emailRegex);",
+                  "    console.log('✅ Email format valid: ' + jsonData.email);",
+                  "});",
+                  "",
+                  "pm.test('Roles array exists', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('roles');",
+                  "    pm.expect(jsonData.roles).to.be.an('array');",
+                  "    console.log('✅ Roles array present');",
+                  "});",
+                  "",
+                  "pm.test('Data types are correct', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.expect(jsonData.id).to.be.a('string');",
+                  "    pm.expect(jsonData.firstName).to.be.a('string');",
+                  "    pm.expect(jsonData.lastName).to.be.a('string');",
+                  "    pm.expect(jsonData.email).to.be.a('string');",
+                  "    ",
+                  "    console.log('✅ All data types validated');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "id": "588ec8a2-c91d-4e11-b569-7cdad7ec7f6b",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"securePassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "register"
+              ]
+            },
+            "description": "Public endpoint to register a new user with a password. Creates a new user account that can be used to login."
+          },
+          "response": []
+        },
+        {
+          "name": "Register User without Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Register User without Password Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 201 Created', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has required user fields', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('firstName');",
+                  "    pm.expect(jsonData).to.have.property('lastName');",
+                  "    pm.expect(jsonData).to.have.property('email');",
+                  "    ",
+                  "    console.log('✅ All required fields present');",
+                  "});",
+                  "",
+                  "pm.test('User ID is saved to variable', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.exist;",
+                  "    ",
+                  "    pm.collectionVariables.set('userId', jsonData.id);",
+                  "    console.log('✅ User ID saved: ' + jsonData.id);",
+                  "});",
+                  "",
+                  "pm.test('Email format is valid', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;",
+                  "    pm.expect(jsonData.email).to.match(emailRegex);",
+                  "    console.log('✅ Email format valid: ' + jsonData.email);",
+                  "});",
+                  "",
+                  "pm.test('Roles array exists', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('roles');",
+                  "    pm.expect(jsonData.roles).to.be.an('array');",
+                  "    console.log('✅ Roles array present');",
+                  "});",
+                  "",
+                  "pm.test('Data types are correct', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.expect(jsonData.id).to.be.a('string');",
+                  "    pm.expect(jsonData.firstName).to.be.a('string');",
+                  "    pm.expect(jsonData.lastName).to.be.a('string');",
+                  "    pm.expect(jsonData.email).to.be.a('string');",
+                  "    ",
+                  "    console.log('✅ All data types validated');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "id": "1f04a871-a06c-4726-a01d-00576ecf4cea",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Smith\",\n  \"email\": \"jane.smith@example.com\",\n  \"roles\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/registerUser",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "registerUser"
+              ]
+            },
+            "description": "Authenticated endpoint to register a new user without a password. Requires authentication and appropriate permissions."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Get All Users Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is an array', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    console.log('✅ Response is an array with ' + jsonData.length + ' users');",
+                  "});",
+                  "",
+                  "pm.test('Users have required fields', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    if (jsonData.length > 0) {",
+                  "        jsonData.forEach((user, index) => {",
+                  "            pm.expect(user).to.have.property('id');",
+                  "            pm.expect(user).to.have.property('firstName');",
+                  "            pm.expect(user).to.have.property('lastName');",
+                  "            pm.expect(user).to.have.property('email');",
+                  "        });",
+                  "        console.log('✅ All users have required fields');",
+                  "    } else {",
+                  "        console.log('ℹ️ No users found in response');",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('User data types are correct', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    if (jsonData.length > 0) {",
+                  "        jsonData.forEach((user) => {",
+                  "            pm.expect(user.id).to.be.a('string');",
+                  "            pm.expect(user.firstName).to.be.a('string');",
+                  "            pm.expect(user.lastName).to.be.a('string');",
+                  "            pm.expect(user.email).to.be.a('string');",
+                  "        });",
+                  "        console.log('✅ All user data types validated');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "id": "db73f280-3e6f-4cb1-bef9-311fd0b20eec",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user"
+              ]
+            },
+            "description": "Retrieves a list of all users in the system. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "Get User by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Get User by ID Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has correct user structure', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('firstName');",
+                  "    pm.expect(jsonData).to.have.property('lastName');",
+                  "    pm.expect(jsonData).to.have.property('email');",
+                  "    ",
+                  "    console.log('✅ User structure validated');",
+                  "});",
+                  "",
+                  "pm.test('User ID matches requested ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const requestedUserId = pm.collectionVariables.get('userId');",
+                  "    ",
+                  "    if (requestedUserId) {",
+                  "        pm.expect(jsonData.id).to.eql(requestedUserId);",
+                  "        console.log('✅ User ID matches: ' + jsonData.id);",
+                  "    } else {",
+                  "        console.log('ℹ️ No userId variable set to compare');",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Data types are correct', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.expect(jsonData.id).to.be.a('string');",
+                  "    pm.expect(jsonData.firstName).to.be.a('string');",
+                  "    pm.expect(jsonData.lastName).to.be.a('string');",
+                  "    pm.expect(jsonData.email).to.be.a('string');",
+                  "    ",
+                  "    console.log('✅ All data types validated');",
+                  "});",
+                  "",
+                  "pm.test('Email format is valid', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;",
+                  "    pm.expect(jsonData.email).to.match(emailRegex);",
+                  "    console.log('✅ Email format valid');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "id": "f67db958-541b-4e59-b108-75b6759fc551",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "{{userId}}"
+              ]
+            },
+            "description": "Retrieves detailed information about a specific user by their ID. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Update User Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has correct user structure', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('firstName');",
+                  "    pm.expect(jsonData).to.have.property('lastName');",
+                  "    pm.expect(jsonData).to.have.property('email');",
+                  "    ",
+                  "    console.log('✅ User structure validated');",
+                  "});",
+                  "",
+                  "pm.test('Updated fields are reflected in response', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const requestBody = JSON.parse(pm.request.body.raw);",
+                  "    ",
+                  "    pm.expect(jsonData.firstName).to.eql(requestBody.firstName);",
+                  "    pm.expect(jsonData.lastName).to.eql(requestBody.lastName);",
+                  "    pm.expect(jsonData.email).to.eql(requestBody.email);",
+                  "    ",
+                  "    console.log('✅ Updated fields match request body');",
+                  "});",
+                  "",
+                  "pm.test('Data types are correct', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.expect(jsonData.id).to.be.a('string');",
+                  "    pm.expect(jsonData.firstName).to.be.a('string');",
+                  "    pm.expect(jsonData.lastName).to.be.a('string');",
+                  "    pm.expect(jsonData.email).to.be.a('string');",
+                  "    ",
+                  "    console.log('✅ All data types validated');",
+                  "});",
+                  "",
+                  "pm.test('Roles array exists', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('roles');",
+                  "    pm.expect(jsonData.roles).to.be.an('array');",
+                  "    console.log('✅ Roles array present');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "id": "56e2befb-ec0f-46b5-a97d-360f32b7c58f",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{userId}}\",\n  \"firstName\": \"Updated\",\n  \"lastName\": \"Name\",\n  \"email\": \"updated@example.com\",\n  \"roles\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "{{userId}}"
+              ]
+            },
+            "description": "Updates an existing user's information. Requires authentication and USER_MODIFY authority."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Delete User Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 204 No Content', function() {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "pm.test('Response body is empty', function() {",
+                  "    const responseText = pm.response.text();",
+                  "    pm.expect(responseText).to.be.empty;",
+                  "    console.log('✅ No content in response (as expected for DELETE)');",
+                  "});",
+                  "",
+                  "// Clear userId variable after successful deletion",
+                  "if (pm.response.code === 204) {",
+                  "    console.log('🗑️ User deleted successfully');",
+                  "    console.log('ℹ️ Note: userId variable still contains the deleted user ID');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "id": "b4162561-fa5e-43bc-a6c5-3942683d1107",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "{{userId}}"
+              ]
+            },
+            "description": "Deletes a user from the system. Requires authentication and USER_DEACTIVATE authority."
+          },
+          "response": []
+        }
+      ],
+      "id": "cd042f20-4ae7-40d8-91a1-972f0c6b597c"
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "Create Event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Create Event Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 201 Created', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has required event fields', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('eventName');",
+                  "    pm.expect(jsonData).to.have.property('eventLocation');",
+                  "    pm.expect(jsonData).to.have.property('startDateTime');",
+                  "    pm.expect(jsonData).to.have.property('endDateTime');",
+                  "    pm.expect(jsonData).to.have.property('eventType');",
+                  "    ",
+                  "    console.log('✅ All required fields present');",
+                  "});",
+                  "",
+                  "pm.test('Event ID is saved to variable', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.exist;",
+                  "    ",
+                  "    pm.collectionVariables.set('eventId', jsonData.id);",
+                  "    console.log('✅ Event ID saved: ' + jsonData.id);",
+                  "});",
+                  "",
+                  "pm.test('EventType is valid', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const validEventTypes = ['MEETING', 'CONFERENCE', 'WORKSHOP', 'OTHER'];",
+                  "    ",
+                  "    pm.expect(validEventTypes).to.include(jsonData.eventType);",
+                  "    console.log('✅ EventType is valid: ' + jsonData.eventType);",
+                  "});",
+                  "",
+                  "pm.test('Participants object exists', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('participants');",
+                  "    pm.expect(jsonData.participants).to.be.an('object');",
+                  "    console.log('✅ Participants object present');",
+                  "});",
+                  "",
+                  "pm.test('Data types are correct', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.expect(jsonData.id).to.be.a('string');",
+                  "    pm.expect(jsonData.eventName).to.be.a('string');",
+                  "    pm.expect(jsonData.eventLocation).to.be.a('string');",
+                  "    pm.expect(jsonData.startDateTime).to.be.a('string');",
+                  "    pm.expect(jsonData.endDateTime).to.be.a('string');",
+                  "    pm.expect(jsonData.eventType).to.be.a('string');",
+                  "    ",
+                  "    console.log('✅ All data types validated');",
+                  "});",
+                  "",
+                  "pm.test('DateTime format is valid', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    // ISO 8601 format check",
+                  "    const dateTimeRegex = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/;",
+                  "    ",
+                  "    pm.expect(jsonData.startDateTime).to.match(dateTimeRegex);",
+                  "    pm.expect(jsonData.endDateTime).to.match(dateTimeRegex);",
+                  "    console.log('✅ DateTime formats are valid');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "id": "804b87b9-f02d-47c1-b4ff-bc6613b20d6b",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventName\": \"Team Meeting\",\n  \"eventLocation\": \"Conference Room A\",\n  \"startDateTime\": \"2024-12-31T10:00:00\",\n  \"endDateTime\": \"2024-12-31T11:00:00\",\n  \"eventDescription\": \"Quarterly planning meeting\",\n  \"eventType\": \"MEETING\",\n  \"participants\": {}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ]
+            },
+            "description": "Creates a new event. Requires authentication and EVENT_CREATE authority. EventType can be: MEETING, CONFERENCE, WORKSHOP, or OTHER."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Event by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Get Event by ID Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has correct event structure', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('eventName');",
+                  "    pm.expect(jsonData).to.have.property('eventLocation');",
+                  "    pm.expect(jsonData).to.have.property('startDateTime');",
+                  "    pm.expect(jsonData).to.have.property('endDateTime');",
+                  "    pm.expect(jsonData).to.have.property('eventType');",
+                  "    ",
+                  "    console.log('✅ Event structure validated');",
+                  "});",
+                  "",
+                  "pm.test('Event ID matches requested ID', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const requestedEventId = pm.collectionVariables.get('eventId');",
+                  "    ",
+                  "    if (requestedEventId) {",
+                  "        pm.expect(jsonData.id).to.eql(requestedEventId);",
+                  "        console.log('✅ Event ID matches: ' + jsonData.id);",
+                  "    } else {",
+                  "        console.log('ℹ️ No eventId variable set to compare');",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Data types are correct', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.expect(jsonData.id).to.be.a('string');",
+                  "    pm.expect(jsonData.eventName).to.be.a('string');",
+                  "    pm.expect(jsonData.eventLocation).to.be.a('string');",
+                  "    pm.expect(jsonData.eventType).to.be.a('string');",
+                  "    ",
+                  "    console.log('✅ All data types validated');",
+                  "});",
+                  "",
+                  "pm.test('EventType is valid', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const validEventTypes = ['MEETING', 'CONFERENCE', 'WORKSHOP', 'OTHER'];",
+                  "    ",
+                  "    pm.expect(validEventTypes).to.include(jsonData.eventType);",
+                  "    console.log('✅ EventType is valid: ' + jsonData.eventType);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "id": "b95508a4-2d43-471f-99df-f827d0ccf2f5",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}"
+              ]
+            },
+            "description": "Retrieves detailed information about a specific event by its ID. Requires authentication and EVENT_READ authority."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Events",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Get My Events Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is an array', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    console.log('✅ Response is an array with ' + jsonData.length + ' events');",
+                  "});",
+                  "",
+                  "pm.test('Events have required fields', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    if (jsonData.length > 0) {",
+                  "        jsonData.forEach((event, index) => {",
+                  "            pm.expect(event).to.have.property('id');",
+                  "            pm.expect(event).to.have.property('eventName');",
+                  "            pm.expect(event).to.have.property('eventLocation');",
+                  "            pm.expect(event).to.have.property('startDateTime');",
+                  "            pm.expect(event).to.have.property('endDateTime');",
+                  "            pm.expect(event).to.have.property('eventType');",
+                  "        });",
+                  "        console.log('✅ All events have required fields');",
+                  "    } else {",
+                  "        console.log('ℹ️ No events found for current user');",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Event data types are correct', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    if (jsonData.length > 0) {",
+                  "        jsonData.forEach((event) => {",
+                  "            pm.expect(event.id).to.be.a('string');",
+                  "            pm.expect(event.eventName).to.be.a('string');",
+                  "            pm.expect(event.eventLocation).to.be.a('string');",
+                  "            pm.expect(event.eventType).to.be.a('string');",
+                  "        });",
+                  "        console.log('✅ All event data types validated');",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('EventTypes are valid', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const validEventTypes = ['MEETING', 'CONFERENCE', 'WORKSHOP', 'OTHER'];",
+                  "    ",
+                  "    if (jsonData.length > 0) {",
+                  "        jsonData.forEach((event) => {",
+                  "            pm.expect(validEventTypes).to.include(event.eventType);",
+                  "        });",
+                  "        console.log('✅ All EventTypes are valid');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "id": "b939f55d-612d-4407-925c-831a641bf9db",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/my-events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "my-events"
+              ]
+            },
+            "description": "Retrieves all events associated with the authenticated user. Requires authentication and EVENT_READ authority."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Events",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Get All Events Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is an array', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    console.log('✅ Response is an array with ' + jsonData.length + ' events');",
+                  "});",
+                  "",
+                  "pm.test('Events have required fields', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    if (jsonData.length > 0) {",
+                  "        jsonData.forEach((event, index) => {",
+                  "            pm.expect(event).to.have.property('id');",
+                  "            pm.expect(event).to.have.property('eventName');",
+                  "            pm.expect(event).to.have.property('eventLocation');",
+                  "            pm.expect(event).to.have.property('startDateTime');",
+                  "            pm.expect(event).to.have.property('endDateTime');",
+                  "            pm.expect(event).to.have.property('eventType');",
+                  "        });",
+                  "        console.log('✅ All events have required fields');",
+                  "    } else {",
+                  "        console.log('ℹ️ No events found in system');",
+                  "    }",
+                  "});",
+                  "",
+                  "pm.test('Event data types are correct', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    if (jsonData.length > 0) {",
+                  "        jsonData.forEach((event) => {",
+                  "            pm.expect(event.id).to.be.a('string');",
+                  "            pm.expect(event.eventName).to.be.a('string');",
+                  "            pm.expect(event.eventLocation).to.be.a('string');",
+                  "            pm.expect(event.eventType).to.be.a('string');",
+                  "        });",
+                  "        console.log('✅ All event data types validated');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "id": "80d85c49-17cc-43af-8179-edde3cfd8bdf",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/getAllEvents",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "getAllEvents"
+              ]
+            },
+            "description": "Retrieves a list of all events in the system. Requires authentication."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Update Event Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has correct event structure', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('eventName');",
+                  "    pm.expect(jsonData).to.have.property('eventLocation');",
+                  "    pm.expect(jsonData).to.have.property('startDateTime');",
+                  "    pm.expect(jsonData).to.have.property('endDateTime');",
+                  "    pm.expect(jsonData).to.have.property('eventType');",
+                  "    ",
+                  "    console.log('✅ Event structure validated');",
+                  "});",
+                  "",
+                  "pm.test('Updated fields are reflected in response', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const requestBody = JSON.parse(pm.request.body.raw);",
+                  "    ",
+                  "    pm.expect(jsonData.eventName).to.eql(requestBody.eventName);",
+                  "    pm.expect(jsonData.eventLocation).to.eql(requestBody.eventLocation);",
+                  "    pm.expect(jsonData.eventType).to.eql(requestBody.eventType);",
+                  "    ",
+                  "    console.log('✅ Updated fields match request body');",
+                  "});",
+                  "",
+                  "pm.test('EventType is valid', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    const validEventTypes = ['MEETING', 'CONFERENCE', 'WORKSHOP', 'OTHER'];",
+                  "    ",
+                  "    pm.expect(validEventTypes).to.include(jsonData.eventType);",
+                  "    console.log('✅ EventType is valid: ' + jsonData.eventType);",
+                  "});",
+                  "",
+                  "pm.test('Data types are correct', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    ",
+                  "    pm.expect(jsonData.id).to.be.a('string');",
+                  "    pm.expect(jsonData.eventName).to.be.a('string');",
+                  "    pm.expect(jsonData.eventLocation).to.be.a('string');",
+                  "    pm.expect(jsonData.eventType).to.be.a('string');",
+                  "    ",
+                  "    console.log('✅ All data types validated');",
+                  "});",
+                  "",
+                  "pm.test('Participants object exists', function() {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('participants');",
+                  "    pm.expect(jsonData.participants).to.be.an('object');",
+                  "    console.log('✅ Participants object present');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "id": "78903482-7832-4976-b5e7-c670b569d42b",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{eventId}}\",\n  \"eventName\": \"Updated Meeting\",\n  \"eventLocation\": \"Conference Room B\",\n  \"startDateTime\": \"2024-12-31T14:00:00\",\n  \"endDateTime\": \"2024-12-31T15:00:00\",\n  \"eventDescription\": \"Updated description\",\n  \"eventType\": \"CONFERENCE\",\n  \"participants\": {}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}"
+              ]
+            },
+            "description": "Updates an existing event's information. Requires authentication and EVENT_MODIFY authority."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Delete Event Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 204 No Content', function() {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "pm.test('Response body is empty', function() {",
+                  "    const responseText = pm.response.text();",
+                  "    pm.expect(responseText).to.be.empty;",
+                  "    console.log('✅ No content in response (as expected for DELETE)');",
+                  "});",
+                  "",
+                  "// Log success message",
+                  "if (pm.response.code === 204) {",
+                  "    console.log('🗑️ Event deleted successfully');",
+                  "    console.log('ℹ️ Note: eventId variable still contains the deleted event ID');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "id": "cbe39a2b-b6d9-4202-b17e-90e599a5a55a",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}"
+              ]
+            },
+            "description": "Deletes an event from the system. Requires authentication and EVENT_DELETE authority."
+          },
+          "response": []
+        },
+        {
+          "name": "Add Participant to Event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Add Participant to Event Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Participant was added successfully', function() {",
+                  "    // For successful addition, we expect a 200 response",
+                  "    pm.expect(pm.response.code).to.eql(200);",
+                  "    console.log('✅ Participant added to event successfully');",
+                  "});",
+                  "",
+                  "// Log the role that was assigned",
+                  "const urlParams = pm.request.url.query;",
+                  "if (urlParams) {",
+                  "    const roleParam = urlParams.find(p => p.key === 'role');",
+                  "    if (roleParam) {",
+                  "        console.log('👤 Participant role: ' + roleParam.value);",
+                  "    }",
+                  "}",
+                  "",
+                  "console.log('📋 Event ID: ' + pm.collectionVariables.get('eventId'));",
+                  "console.log('📋 User ID: ' + pm.collectionVariables.get('userId'));"
+                ]
+              }
+            }
+          ],
+          "id": "7ea6ca58-c142-4260-8793-4385f5b201ce",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/participants/{{userId}}?role=ATTENDEE",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "participants",
+                "{{userId}}"
+              ],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "ATTENDEE",
+                  "description": "EventRole: ADMIN, OWNER, COLLABORATOR, or ATTENDEE"
+                }
+              ]
+            },
+            "description": "Adds a participant to an event with a specified role. Requires authentication and EVENT_MODIFY authority. Role can be: ADMIN, OWNER, COLLABORATOR, or ATTENDEE."
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Participant from Event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Remove Participant from Event Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 204 No Content', function() {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "pm.test('Response body is empty', function() {",
+                  "    const responseText = pm.response.text();",
+                  "    pm.expect(responseText).to.be.empty;",
+                  "    console.log('✅ No content in response (as expected for DELETE)');",
+                  "});",
+                  "",
+                  "// Log success message",
+                  "if (pm.response.code === 204) {",
+                  "    console.log('👤 Participant removed from event successfully');",
+                  "    console.log('📋 Event ID: ' + pm.collectionVariables.get('eventId'));",
+                  "    console.log('📋 User ID: ' + pm.collectionVariables.get('userId'));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "id": "f16b4444-2314-4b16-8928-e0b07a54fb08",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/participants/{{userId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "participants",
+                "{{userId}}"
+              ]
+            },
+            "description": "Removes a participant from an event. Requires authentication and EVENT_MODIFY authority."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Participant Role",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// ========================================",
+                  "// Update Participant Role Tests",
+                  "// ========================================",
+                  "",
+                  "pm.test('Status code is 200 OK', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Role was updated successfully', function() {",
+                  "    pm.expect(pm.response.code).to.eql(200);",
+                  "    console.log('✅ Participant role updated successfully');",
+                  "});",
+                  "",
+                  "// Log the new role that was assigned",
+                  "const urlParams = pm.request.url.query;",
+                  "if (urlParams) {",
+                  "    const newRoleParam = urlParams.find(p => p.key === 'newRole');",
+                  "    if (newRoleParam) {",
+                  "        const validRoles = ['ADMIN', 'OWNER', 'COLLABORATOR', 'ATTENDEE'];",
+                  "        pm.test('New role is valid', function() {",
+                  "            pm.expect(validRoles).to.include(newRoleParam.value);",
+                  "        });",
+                  "        console.log('👤 New participant role: ' + newRoleParam.value);",
+                  "    }",
+                  "}",
+                  "",
+                  "console.log('📋 Event ID: ' + pm.collectionVariables.get('eventId'));",
+                  "console.log('📋 User ID: ' + pm.collectionVariables.get('userId'));"
+                ]
+              }
+            }
+          ],
+          "id": "e649b244-454b-4db7-a98f-684c6cdf3fac",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{eventId}}/participants/{{userId}}/role?newRole=COLLABORATOR",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{eventId}}",
+                "participants",
+                "{{userId}}",
+                "role"
+              ],
+              "query": [
+                {
+                  "key": "newRole",
+                  "value": "COLLABORATOR",
+                  "description": "New EventRole: ADMIN, OWNER, COLLABORATOR, or ATTENDEE"
+                }
+              ]
+            },
+            "description": "Updates a participant's role in an event. Requires authentication and EVENT_MODIFY authority. New role can be: ADMIN, OWNER, COLLABORATOR, or ATTENDEE."
+          },
+          "response": []
+        }
+      ],
+      "id": "246b6b57-a939-4bf1-b8af-61072db77927"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// ========================================",
+          "// Collection-Level Pre-Request Script",
+          "// ========================================",
+          "",
+          "// Log current request information",
+          "console.log('========================================');",
+          "console.log('🚀 REQUEST: ' + pm.info.requestName);",
+          "console.log('📍 Method: ' + pm.request.method + ' ' + pm.request.url.toString());",
+          "console.log('⏰ Timestamp: ' + new Date().toISOString());",
+          "console.log('========================================');",
+          "",
+          "// List of public endpoints that don't require authentication",
+          "const publicEndpoints = [",
+          "    '/user/login',",
+          "    '/user/register'",
+          "];",
+          "",
+          "// Check if current request is a public endpoint",
+          "const currentUrl = pm.request.url.toString();",
+          "const isPublicEndpoint = publicEndpoints.some(endpoint => currentUrl.includes(endpoint));",
+          "",
+          "// Check token availability for authenticated endpoints",
+          "if (!isPublicEndpoint) {",
+          "    const token = pm.collectionVariables.get('token');",
+          "    if (!token || token === '') {",
+          "        console.warn('⚠️ WARNING: No authentication token found!');",
+          "        console.warn('💡 TIP: Run the Login request first to obtain a token.');",
+          "    } else {",
+          "        console.log('✅ Token available for authenticated request');",
+          "    }",
+          "} else {",
+          "    console.log('ℹ️ Public endpoint - no authentication required');",
+          "}",
+          "",
+          "// Log current variable values for debugging",
+          "console.log('📋 Current Variables:');",
+          "console.log('   - baseUrl: ' + pm.collectionVariables.get('baseUrl'));",
+          "console.log('   - token: ' + (pm.collectionVariables.get('token') ? '[SET]' : '[NOT SET]'));",
+          "console.log('   - userId: ' + (pm.collectionVariables.get('userId') || '[NOT SET]'));",
+          "console.log('   - eventId: ' + (pm.collectionVariables.get('eventId') || '[NOT SET]'));"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// ========================================",
+          "// Collection-Level Test Script",
+          "// ========================================",
+          "",
+          "// Log response information",
+          "console.log('========================================');",
+          "console.log('📥 RESPONSE for: ' + pm.info.requestName);",
+          "console.log('📊 Status: ' + pm.response.code + ' ' + pm.response.status);",
+          "console.log('⏱️ Response Time: ' + pm.response.responseTime + 'ms');",
+          "console.log('========================================');",
+          "",
+          "// Handle common error responses",
+          "const statusCode = pm.response.code;",
+          "",
+          "if (statusCode === 401) {",
+          "    console.error('❌ 401 Unauthorized');",
+          "    console.error('💡 Your authentication token may be missing, invalid, or expired.');",
+          "    console.error('💡 TIP: Run the Login request to obtain a fresh token.');",
+          "}",
+          "",
+          "if (statusCode === 403) {",
+          "    console.error('❌ 403 Forbidden');",
+          "    console.error('💡 You do not have permission to access this resource.');",
+          "    console.error('💡 TIP: Check if your user has the required role/authority.');",
+          "}",
+          "",
+          "if (statusCode === 404) {",
+          "    console.error('❌ 404 Not Found');",
+          "    console.error('💡 The requested resource was not found.');",
+          "    console.error('💡 TIP: Verify the ID or endpoint URL is correct.');",
+          "}",
+          "",
+          "if (statusCode === 500) {",
+          "    console.error('❌ 500 Internal Server Error');",
+          "    console.error('💡 The server encountered an unexpected error.');",
+          "    console.error('💡 TIP: Check server logs for more details.');",
+          "}",
+          "",
+          "if (statusCode >= 200 && statusCode < 300) {",
+          "    console.log('✅ Request completed successfully');",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "id": "808d1bd7-8844-4023-84a0-c3b6b2f2a9cd",
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "id": "b404c919-8b36-42be-a25e-1829e1bc076c",
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "id": "0fca8fec-f1df-4c3f-833a-2950e68dc453",
+      "key": "eventId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

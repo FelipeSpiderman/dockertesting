@@ -1,0 +1,103 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 890B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/gradle:jdk18
+#2 ...
+
+#3 [internal] load metadata for docker.io/library/eclipse-temurin:18-jre
+#3 DONE 0.7s
+
+#2 [internal] load metadata for docker.io/library/gradle:jdk18
+#2 DONE 0.7s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [build 1/4] FROM docker.io/library/gradle:jdk18@sha256:f3c6308a57fa86af3c05ed1746cd041035074ed932cb9fecc0a0efedad35955e
+#5 resolve docker.io/library/gradle:jdk18@sha256:f3c6308a57fa86af3c05ed1746cd041035074ed932cb9fecc0a0efedad35955e 0.0s done
+#5 DONE 0.0s
+
+#6 [stage-1 1/4] FROM docker.io/library/eclipse-temurin:18-jre@sha256:76246c2bef9e0876aa139a441e08fd7013921d34276326290d9c0f2c3b6f78d1
+#6 resolve docker.io/library/eclipse-temurin:18-jre@sha256:76246c2bef9e0876aa139a441e08fd7013921d34276326290d9c0f2c3b6f78d1 0.0s done
+#6 DONE 0.0s
+
+#7 [stage-1 2/4] RUN mkdir -p /app
+#7 CACHED
+
+#8 [stage-1 3/4] WORKDIR /app
+#8 CACHED
+
+#9 [internal] load build context
+#9 transferring context: 497.92kB 0.6s done
+#9 DONE 0.6s
+
+#5 [build 1/4] FROM docker.io/library/gradle:jdk18@sha256:f3c6308a57fa86af3c05ed1746cd041035074ed932cb9fecc0a0efedad35955e
+#5 CACHED
+
+#10 [build 2/4] COPY --chown=gradle:gradle . /home/gradle/src
+#10 DONE 0.5s
+
+#11 [build 3/4] WORKDIR /home/gradle/src
+#11 DONE 0.1s
+
+#12 [build 4/4] RUN gradle --no-daemon bootJar
+#12 0.822 
+#12 0.822 Welcome to Gradle 7.5.1!
+#12 0.822 
+#12 0.822 Here are the highlights of this release:
+#12 0.822  - Support for Java 18
+#12 0.822  - Support for building with Groovy 4
+#12 0.823  - Much more responsive continuous builds
+#12 0.823  - Improved diagnostics for dependency resolution
+#12 0.823 
+#12 0.823 For more details see https://docs.gradle.org/7.5.1/release-notes.html
+#12 0.823 
+#12 0.922 To honour the JVM settings for this build a single-use Daemon process will be forked. See https://docs.gradle.org/7.5.1/userguide/gradle_daemon.html#sec:disabling_the_daemon.
+#12 1.721 Daemon will be stopped at the end of the build 
+#12 16.02 > Task :compileJava FAILED
+#12 16.02 
+#12 16.02 FAILURE: Build failed with an exception.
+#12 16.02 
+#12 16.02 * What went wrong:
+#12 16.02 Execution failed for task ':compileJava'.
+#12 16.02 > Error while evaluating property 'sourceCompatibility' of task ':compileJava'
+#12 16.02    > The new Java toolchain feature cannot be used at the project level in combination with source and/or target compatibility
+#12 16.02 
+#12 16.02 * Try:
+#12 16.02 > Run with --stacktrace option to get the stack trace.
+#12 16.02 > Run with --info or --debug option to get more log output.
+#12 16.02 > Run with --scan to get full insights.
+#12 16.02 
+#12 16.02 * Get more help at https://help.gradle.org
+#12 16.02 
+#12 16.02 BUILD FAILED in 15s
+#12 16.02 1 actionable task: 1 executed
+#12 ERROR: process "/bin/sh -c gradle --no-daemon bootJar" did not complete successfully: exit code: 1
+------
+ > [build 4/4] RUN gradle --no-daemon bootJar:
+16.02 
+16.02 * Try:
+16.02 > Run with --stacktrace option to get the stack trace.
+16.02 > Run with --info or --debug option to get more log output.
+16.02 > Run with --scan to get full insights.
+16.02 
+16.02 * Get more help at https://help.gradle.org
+16.02 
+16.02 BUILD FAILED in 15s
+16.02 1 actionable task: 1 executed
+------
+Dockerfile:8
+--------------------
+   6 |     WORKDIR /home/gradle/src
+   7 |     # Build the Spring Boot JAR
+   8 | >>> RUN gradle --no-daemon bootJar
+   9 |     
+  10 |     # Stage 2: Runtime
+--------------------
+ERROR: failed to build: failed to solve: process "/bin/sh -c gradle --no-daemon bootJar" did not complete successfully: exit code: 1
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/k3lm8j3yl6vqdbxn937t0nigx

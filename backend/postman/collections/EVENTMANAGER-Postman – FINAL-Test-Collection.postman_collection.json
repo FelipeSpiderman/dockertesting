@@ -1,0 +1,2024 @@
+{
+  "info": {
+    "_postman_id": "dceac8d5-7c49-49b5-a84b-f7d225aa2e08",
+    "name": "EVENTMANAGER – FINAL Test Collection",
+    "description": "Comprehensive test collection with multiple user roles (Admin, Owner, Collaborator, Users A-D) and proper cleanup",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "43313951",
+    "_collection_link": "https://go.postman.co/collection/43313951-dceac8d5-7c49-49b5-a84b-f7d225aa2e08?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "SETUP - Authentication",
+      "item": [
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Test: Statuscode 200",
+                  "pm.test(\"Admin Login - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Test: Token aus Header holen",
+                  "pm.test(\"Admin Login - Save Token from Header\", function () {",
+                  "    // Header \"Authorization\" auslesen",
+                  "    var authHeader = pm.response.headers.get(\"Authorization\");",
+                  "    ",
+                  "    pm.expect(authHeader).to.not.be.undefined;",
+                  "",
+                  "    // Falls das Format \"Bearer <token>\" ist",
+                  "    var token = authHeader.split(\" \")[1]; // [0] = \"Bearer\", [1] = der Token",
+                  "    ",
+                  "    // In Collection-Variable speichern",
+                  "    pm.collectionVariables.set(\"adminToken\", token);",
+                  "",
+                  "    console.log(\"Admin Token gespeichert:\", token);",
+                  "});",
+                  "",
+                  "console.log(\"✓ Admin authenticated\");",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "admin@example.com",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "1234",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "login"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Login Admin",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"1234\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/login",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "plain",
+              "header": [
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Access-Control-Request-Method"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Access-Control-Request-Headers"
+                },
+                {
+                  "key": "Authorization",
+                  "value": "Bearer eyJhbGciOiJIUzM4NCJ9.eyJhdXRob3JpdGllcyI6W3siYXV0aG9yaXR5IjoiVVNFUl9SRUFEIn0seyJhdXRob3JpdHkiOiJFVkVOVF9ERUxFVEUifSx7ImF1dGhvcml0eSI6IkVWRU5UX01PRElGWSJ9LHsiYXV0aG9yaXR5IjoiRVZFTlRfQ1JFQVRFIn0seyJhdXRob3JpdHkiOiJFVkVOVF9SRUFEIn0seyJhdXRob3JpdHkiOiJVU0VSX0NSRUFURSJ9LHsiYXV0aG9yaXR5IjoiVVNFUl9ERUFDVElWQVRFIn1dLCJzdWIiOiJiYTgwNGNiOS1mYTE0LTQyYTUtYWZhZi1iZTQ4ODc0MmZjNTQiLCJpYXQiOjE3Njg1NjkxMjAsImV4cCI6MTc2ODY2OTEyMCwiaXNzIjoidWsyMjMifQ.UcFnZ9L_C1plG3UnBk6s10x2xWYoqNpy4u8iu8MbYzv6sJ9quZpJfAe-XcY5bqCU"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "X-XSS-Protection",
+                  "value": "0"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, no-store, max-age=0, must-revalidate"
+                },
+                {
+                  "key": "Pragma",
+                  "value": "no-cache"
+                },
+                {
+                  "key": "Expires",
+                  "value": "0"
+                },
+                {
+                  "key": "X-Frame-Options",
+                  "value": "DENY"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "0"
+                },
+                {
+                  "key": "Date",
+                  "value": "Fri, 16 Jan 2026 13:12:00 GMT"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=60"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                }
+              ],
+              "cookie": [],
+              "body": null
+            }
+          ]
+        },
+        {
+          "name": "Login Owner",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Owner Login - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Owner Login - Has Token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "    pm.collectionVariables.set(\"ownerToken\", jsonData.token);",
+                  "});",
+                  "",
+                  "console.log(\"✓ Owner authenticated\");"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"owner@example.com\",\n  \"password\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login Collaborator",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Collaborator Login - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Collaborator Login - Has Token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "    pm.collectionVariables.set(\"collaboratorToken\", jsonData.token);",
+                  "});",
+                  "",
+                  "console.log(\"✓ Collaborator authenticated\");"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"collaborator@example.com\",\n  \"password\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login User A",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User A Login - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"User A Login - Has Token\", function () {",
+                  "     var authHeader = pm.response.headers.get(\"Authorization\");",
+                  "    ",
+                  "    pm.expect(authHeader).to.not.be.undefined;",
+                  "",
+                  "    // Falls das Format \"Bearer <token>\" ist",
+                  "    var token = authHeader.split(\" \")[1]; // [0] = \"Bearer\", [1] = der Token",
+                  "    ",
+                  "    // In Collection-Variable speichern",
+                  "    pm.collectionVariables.set(\"userAToken\", token);",
+                  "",
+                  "    console.log(\"userAToken gespeichert:\", token);",
+                  "});",
+                  "",
+                  "console.log(\"✓ User A authenticated\");"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userAToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"usera@example.com\",\n  \"password\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login User B",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User B Login - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"User B Login - Has Token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "    pm.collectionVariables.set(\"userBToken\", jsonData.token);",
+                  "});",
+                  "",
+                  "console.log(\"✓ User B authenticated\");"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"userb@example.com\",\n  \"password\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login User C",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User C Login - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"User C Login - Has Token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "    pm.collectionVariables.set(\"userCToken\", jsonData.token);",
+                  "});",
+                  "",
+                  "console.log(\"✓ User C authenticated\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"userc@example.com\",\n  \"password\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login User D",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User D Login - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"User D Login - Has Token\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('token');",
+                  "    pm.collectionVariables.set(\"userDToken\", jsonData.token);",
+                  "});",
+                  "",
+                  "console.log(\"✓ User D authenticated\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"userd@example.com\",\n  \"password\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Users definieren",
+                  "const users = [",
+                  "    { key: 'A', firstName: 'userafirstname', lastName: 'useralastname', email: 'usera@example.com', password: '1234' },",
+                  "    { key: 'B', firstName: 'userbfirstname', lastName: 'userblastname', email: 'userb@example.com', password: '1234' },",
+                  "    { key: 'C', firstName: 'usercfirstname', lastName: 'userclastname', email: 'userc@example.com', password: '1234' },",
+                  "    { key: 'D', firstName: 'userdfirstname', lastName: 'userdlastname', email: 'userd@example.com', password: '1234' }",
+                  "];",
+                  "",
+                  "// Index aus Environment oder 0",
+                  "let currentUserIndex = pm.environment.get('currentUserIndex') || 0;",
+                  "currentUserIndex = parseInt(currentUserIndex);",
+                  "const currentUser = users[currentUserIndex];",
+                  "",
+                  "// Body dynamisch setzen",
+                  "pm.request.body.update(JSON.stringify({",
+                  "    firstName: currentUser.firstName,",
+                  "    lastName: currentUser.lastName,",
+                  "    email: currentUser.email,",
+                  "    password: currentUser.password",
+                  "}));",
+                  "",
+                  "// Speichern für Login",
+                  "pm.environment.set('currentUserKey', currentUser.key);",
+                  "pm.environment.set('currentUserEmail', currentUser.email);",
+                  "pm.environment.set('currentUserPassword', currentUser.password);",
+                  "pm.environment.set('currentUserIndex', currentUserIndex);"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('User registered', function() {",
+                  "    pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Body dynamisch für aktuellen User setzen",
+                  "pm.request.body.update(JSON.stringify({",
+                  "    email: pm.environment.get('currentUserEmail'),",
+                  "    password: pm.environment.get('currentUserPassword')",
+                  "}));"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Login Status 200', function() {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "// Token aus Header holen",
+                  "pm.test('Save Token from Header', function() {",
+                  "    var authHeader = pm.response.headers.get('Authorization');",
+                  "    pm.expect(authHeader).to.not.be.undefined;",
+                  "    var token = authHeader.split(' ')[1];",
+                  "    var userKey = pm.environment.get('currentUserKey');",
+                  "    pm.collectionVariables.set(`user{userKey}Token`, token);",
+                  "    console.log(`✓ User {userKey} Token gespeichert:`, token);",
+                  "});",
+                  "",
+                  "// Nächster User Index",
+                  "let currentUserIndex = parseInt(pm.environment.get('currentUserIndex'));",
+                  "currentUserIndex++;",
+                  "pm.environment.set('currentUserIndex', currentUserIndex);"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "1234",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Authenticate all users before running tests"
+    },
+    {
+      "name": "USER MANAGEMENT",
+      "item": [
+        {
+          "name": "Register New User",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "var randomNumber = Math.floor(Math.random() * 100000);",
+                  "pm.collectionVariables.set(\"randomEmail\", \"test\" + randomNumber + \"@example.com\");"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Register - Status 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Register - Has User Data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('email');",
+                  "    pm.expect(jsonData.email).to.eql(pm.collectionVariables.get('randomEmail'));",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"newUserId\", jsonData.id);",
+                  "console.log(\"✓ New user registered: \" + jsonData.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"email\": \"{{randomEmail}}\",\n  \"password\": \"1234\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin - Get All Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Get All Users - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Get All Users - Is Array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    pm.expect(jsonData.length).to.be.above(0);",
+                  "});",
+                  "",
+                  "console.log(\"✓ Retrieved \" + pm.response.json().length + \" users\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin - Get User by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Get User - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Get User - Correct Data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('email');",
+                  "});",
+                  "",
+                  "console.log(\"✓ Retrieved user data\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/{{adminId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "user",
+                "{{adminId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "EVENT LIFECYCLE TESTS",
+      "item": [
+        {
+          "name": "Admin - Create Event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Create Event - Status 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Create Event - Has Data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData).to.have.property('eventName');",
+                  "    pm.expect(jsonData.eventName).to.eql('Spring Boot Conference 2026');",
+                  "});",
+                  "",
+                  "var jsonData = pm.response.json();",
+                  "pm.collectionVariables.set(\"testEventId\", jsonData.id);",
+                  "console.log(\"✓ Event created: \" + jsonData.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventName\": \"Spring Boot Conference 2026\",\n  \"eventLocation\": \"Berlin Congress Center\",\n  \"startDateTime\": \"2026-06-15T09:00:00\",\n  \"endDateTime\": \"2026-06-17T18:00:00\",\n  \"eventDescription\": \"Annual Spring Boot developers conference\",\n  \"eventType\": \"CONFERENCE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin - Get Event by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Get Event - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Get Event - Correct Data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.id).to.eql(pm.collectionVariables.get('testEventId'));",
+                  "    pm.expect(jsonData.eventName).to.eql('Spring Boot Conference 2026');",
+                  "});",
+                  "",
+                  "console.log(\"✓ Event retrieved successfully\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Owner - Update Event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Update Event - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Update Event - Data Changed\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.eventLocation).to.eql('Munich Exhibition Center');",
+                  "});",
+                  "",
+                  "console.log(\"✓ Event updated by owner\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventName\": \"Spring Boot Conference 2026\",\n  \"eventLocation\": \"Munich Exhibition Center\",\n  \"startDateTime\": \"2026-06-15T09:00:00\",\n  \"endDateTime\": \"2026-06-17T18:00:00\",\n  \"eventDescription\": \"Annual Spring Boot developers conference - Updated venue\",\n  \"eventType\": \"CONFERENCE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin - Get My Events",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Get My Events - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Get My Events - Is Array\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "});",
+                  "",
+                  "console.log(\"✓ Retrieved admin's events\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/my-events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "my-events"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "PARTICIPANT MANAGEMENT",
+      "item": [
+        {
+          "name": "Admin - Add Owner as Participant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Add Owner - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "console.log(\"✓ Owner added to event\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}/participants/{{ownerId}}?role=OWNER",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}",
+                "participants",
+                "{{ownerId}}"
+              ],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "OWNER"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin - Add Collaborator",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Add Collaborator - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "console.log(\"✓ Collaborator added to event\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}/participants/{{collaboratorId}}?role=COLLABORATOR",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}",
+                "participants",
+                "{{collaboratorId}}"
+              ],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "COLLABORATOR"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Owner - Add User A as Participant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Add User A - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "console.log(\"✓ User A added as participant\");"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}/participants/{{userAId}}?role=ATTENDEE",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}",
+                "participants",
+                "{{userAId}}"
+              ],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "ATTENDEE"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Owner - Add User B as Participant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Add User B - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "console.log(\"✓ User B added as participant\");"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}/participants/{{userBId}}?role=ATTENDEE",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}",
+                "participants",
+                "{{userBId}}"
+              ],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "ATTENDEE"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Collaborator - Add User C as Participant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Add User C - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "console.log(\"✓ User C added as participant\");"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{collaboratorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}/participants/{{userCId}}?role=ATTENDEE",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}",
+                "participants",
+                "{{userCId}}"
+              ],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "ATTENDEE"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Collaborator - Add User D as Participant",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Add User D - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "console.log(\"✓ User D added as participant\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{collaboratorToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}/participants/{{userDId}}?role=PARTICIPANT",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}",
+                "participants",
+                "{{userDId}}"
+              ],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "PARTICIPANT"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Owner - Update User A Role to Collaborator",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Update Role - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "console.log(\"✓ User A promoted to Collaborator\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}/participants/{{userAId}}/role?newRole=COLLABORATOR",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}",
+                "participants",
+                "{{userAId}}",
+                "role"
+              ],
+              "query": [
+                {
+                  "key": "newRole",
+                  "value": "COLLABORATOR"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "PERMISSION TESTS",
+      "item": [
+        {
+          "name": "User B - View Event (Should Succeed)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User B View - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"User B View - Has Event Data\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('eventName');",
+                  "});",
+                  "",
+                  "console.log(\"✓ User B can view event as participant\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userBToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User C - Get My Events",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User C My Events - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"User C My Events - Contains Test Event\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    var found = jsonData.some(event => event.id === pm.collectionVariables.get('testEventId'));",
+                  "    pm.expect(found).to.be.true;",
+                  "});",
+                  "",
+                  "console.log(\"✓ User C sees event in their events list\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userCToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/my-events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "my-events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User D - Try to Update Event (Should Fail)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"User D Update - Should Fail\", function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([403, 401]);",
+                  "});",
+                  "",
+                  "console.log(\"✓ User D correctly prevented from updating event\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userDToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventName\": \"Hacked Conference\",\n  \"eventLocation\": \"Nowhere\",\n  \"startDateTime\": \"2026-06-15T09:00:00\",\n  \"endDateTime\": \"2026-06-17T18:00:00\",\n  \"eventDescription\": \"Should not work\",\n  \"eventType\": \"CONFERENCE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Collaborator - Update Event (Should Succeed)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Collaborator Update - Status 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Collaborator Update - Data Changed\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.eventDescription).to.include('Updated by collaborator');",
+                  "});",
+                  "",
+                  "console.log(\"✓ Collaborator can update event\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{collaboratorToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventName\": \"Spring Boot Conference 2026\",\n  \"eventLocation\": \"Munich Exhibition Center\",\n  \"startDateTime\": \"2026-06-15T09:00:00\",\n  \"endDateTime\": \"2026-06-17T18:00:00\",\n  \"eventDescription\": \"Annual Spring Boot developers conference - Updated by collaborator\",\n  \"eventType\": \"CONFERENCE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "CLEANUP - Remove Participants",
+      "item": [
+        {
+          "name": "Owner - Remove User D",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Remove User D - Status 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "console.log(\"✓ User D removed from event\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}/participants/{{userDId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}",
+                "participants",
+                "{{userDId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Owner - Remove User C",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Remove User C - Status 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "console.log(\"✓ User C removed from event\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}/participants/{{userCId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}",
+                "participants",
+                "{{userCId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Owner - Remove User B",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Remove User B - Status 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "console.log(\"✓ User B removed from event\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}/participants/{{userBId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}",
+                "participants",
+                "{{userBId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Owner - Remove User A (Now Collaborator)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Remove User A - Status 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "console.log(\"✓ User A removed from event\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}/participants/{{userAId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}",
+                "participants",
+                "{{userAId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin - Remove Collaborator",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Remove Collaborator - Status 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "console.log(\"✓ Collaborator removed from event\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}/participants/{{collaboratorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}",
+                "participants",
+                "{{collaboratorId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin - Remove Owner",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Remove Owner - Status 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "console.log(\"✓ Owner removed from event\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}/participants/{{ownerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}",
+                "participants",
+                "{{ownerId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "CLEANUP - Delete Event",
+      "item": [
+        {
+          "name": "Admin - Delete Test Event",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Delete Event - Status 204\", function () {",
+                  "    pm.response.to.have.status(204);",
+                  "});",
+                  "",
+                  "console.log(\"✓ Test event deleted successfully\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Event Deleted",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Event Not Found - Status 404\", function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "console.log(\"✓ Confirmed event no longer exists\");"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/events/{{testEventId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events",
+                "{{testEventId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Archiv",
+      "item": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "console.log('═══════════════════════════════════════════════════════');",
+          "console.log('REQUEST: ' + pm.info.requestName);",
+          "console.log('═══════════════════════════════════════════════════════');"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test(\"Response Time < 2000ms\", function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+          "});",
+          "",
+          "console.log('Response Time: ' + pm.response.responseTime + 'ms');",
+          "console.log('─────────────────────────────────────────────────────');"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ownerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "collaboratorToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userAToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userBToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userCToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userDToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminId",
+      "value": "ba804cb9-fa14-42a5-afaf-be488742fc54",
+      "type": "string"
+    },
+    {
+      "key": "ownerId",
+      "value": "22222222-2222-2222-2222-222222222222",
+      "type": "string"
+    },
+    {
+      "key": "collaboratorId",
+      "value": "33333333-3333-3333-3333-333333333333",
+      "type": "string"
+    },
+    {
+      "key": "userAId",
+      "value": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "type": "string"
+    },
+    {
+      "key": "userBId",
+      "value": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+      "type": "string"
+    },
+    {
+      "key": "userCId",
+      "value": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "type": "string"
+    },
+    {
+      "key": "userDId",
+      "value": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+      "type": "string"
+    },
+    {
+      "key": "testEventId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "newUserId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "randomEmail",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
